@@ -3326,7 +3326,13 @@ std::string CGUIInfoManager::GetMultiInfoLabel(const GUIInfo &info, int contextW
     {
       const CGUIControl *control = window->GetControl(info.GetData1());
       if (control)
-        return control->GetDescription(info.GetData2());
+      {
+        int data2 = info.GetData2();
+        if (data2)
+          return control->GetDescription(data2);
+        else
+          return control->GetDescription();
+      }
     }
   }
   else if (info.m_info == WINDOW_PROPERTY)
