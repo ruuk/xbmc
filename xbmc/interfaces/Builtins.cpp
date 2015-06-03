@@ -138,6 +138,7 @@ const BUILT_IN commands[] = {
   { "Mastermode",                 false,  "Control master mode" },
   { "SetGUILanguage",             true,   "Set GUI Language" },
   { "ActivateWindow",             true,   "Activate the specified window" },
+  { "ForceActivateWindow",        true,   "Force activate the specified window" },
   { "ActivateWindowAndFocus",     true,   "Activate the specified window and sets focus to the specified id" },
   { "ReplaceWindowAndFocus",      true,   "Replaces the current window with the new one and sets focus to the specified id" },
   { "ReplaceWindow",              true,   "Replaces the current window with the new one" },
@@ -298,11 +299,11 @@ void CBuiltins::GetHelp(std::string &help)
   }
 }
 
-bool CBuiltins::ActivateWindow(int iWindowID, const std::vector<std::string>& params /* = {} */, bool swappingWindows /* = false */)
+bool CBuiltins::ActivateWindow(int iWindowID, const std::vector<std::string>& params /* = {} */, bool swappingWindows /* = false */, bool force /* = false */)
 {
   // disable the screensaver
   g_application.WakeUpScreenSaverAndDPMS();
-  g_windowManager.ActivateWindow(iWindowID, params, swappingWindows);
+  g_windowManager.ActivateWindow(iWindowID, params, swappingWindows, force);
   return true;
 }
 
@@ -428,7 +429,7 @@ int CBuiltins::Execute(const std::string& execString)
     else
       CScreenShot::TakeScreenshot();
   }
-  else if (execute == "activatewindow" || execute == "replacewindow")
+  else if (execute == "activatewindow" || execute == "forceactivatewindow" || execute == "replacewindow")
   {
     // get the parameters
     std::string strWindow;
@@ -454,7 +455,7 @@ int CBuiltins::Execute(const std::string& execString)
       // activate window only if window and path differ from the current active window
       if (iWindow != g_windowManager.GetActiveWindow() || !bIsSameStartFolder)
       {
-        return ActivateWindow(iWindow, params, execute != "activatewindow");
+        return ActivateWindow(iWindow, params, execute != "activatewindow", execute == "forceactivatewindow");
       }
     }
     else
